@@ -2,28 +2,51 @@ package index
 
 import (
 	"github.com/csimplestring/go-mem-store/document"
+	"hash"
 )
 
 type Index interface {
-	Find(key interface{}) ([]document.ObjectID, error)
-
-	FindGreaterThan(key interface{}) ([]document.ObjectID, error)
-
-	FindGreaterThanEqual(key interface{}) ([]document.ObjectID, error)
-
-	FindLessThan(key interface{}) ([]document.ObjectID, error)
-
-	FindLessThanEqual(key interface{}) ([]document.ObjectID, error)
-
-	FindRange(start, end interface{}) ([]document.ObjectID, error)
-
+	Search(op Op, args ...interface{}) ([]document.ObjectID, error)
 	Fields() []string
+}
 
-	Name() string
+type Op string
 
-	Match(fields... string) bool
+const (
+	OpEq    = "eq"
+	OpGt    = "gt"
+	OpGte   = "gte"
+	OpLt    = "lt"
+	OpLte   = "lte"
+	OpRange = "range"
+)
 
-	Type() string
+type IndexManager struct {
+	indices map[string]Index
+	hash    hash.Hash
+}
 
-	PrefixField() string
+func (i *IndexManager) AddIndex(idx Index) {
+	key := i.getKeyFor(idx.Fields())
+	i.indices[key] = idx
+}
+
+func (i *IndexManager) FindIndexByFields(fields ...string) Index {
+	for i = len(fields); i>=0; i-- {
+		key := i.getKeyFor(fields[:i])
+		if idx, ok := i.indices[key]; ok {
+			return idx
+		}
+	}
+
+	return nil
+}
+
+func (i *IndexManager) getKeyFor(fields ...string) string {
+	i.hash.Reset()
+	for _, f := range fields {
+		i.hash.Write([]byte(f))
+	}
+
+	return string(i.hash.Sum(nil))
 }

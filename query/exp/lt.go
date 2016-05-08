@@ -5,7 +5,7 @@ import (
 )
 
 type Lt struct  {
-	*BinaryExp
+	*BinaryCmpExp
 }
 
 func (l *Lt) Match(d document.Document) bool {
@@ -32,7 +32,7 @@ func (l *Lt) Match(d document.Document) bool {
 
 func NewLt(field string, value interface{}) *Lt {
 	return &Lt{
-		BinaryExp: &BinaryExp{
+		BinaryCmpExp: &BinaryCmpExp{
 			field: field,
 			value: value,
 		},

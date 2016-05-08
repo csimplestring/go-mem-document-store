@@ -9,13 +9,13 @@ type Exp interface {
 	Match(d document.Document) bool
 }
 
-type BinaryExp struct {
+type BinaryCmpExp struct {
 	op    string
 	field string
 	value interface{}
 }
 
-func (b *BinaryExp) checkTypeOrNil(d document.Document) bool {
+func (b *BinaryCmpExp) checkTypeOrNil(d document.Document) bool {
 	arg := d.Get(b.field)
 	if arg == nil {
 		return false
@@ -27,6 +27,10 @@ func (b *BinaryExp) checkTypeOrNil(d document.Document) bool {
 	}
 
 	return true
+}
+
+func (b *BinaryCmpExp) Field() string {
+	return b.field
 }
 
 

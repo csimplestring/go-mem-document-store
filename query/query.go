@@ -1,23 +1,24 @@
 package query
+import "github.com/csimplestring/go-mem-store/query/exp"
 
 type Query interface {
 	GetExpTree() QueryNodeTree
 }
 
-type QueryNodeTree interface {
-	GetLogicalType() bool
-	Children() []QueryNodeTree
-	GetAnd() []QueryNodeTree
-	GetOr() []QueryNodeTree
-	GetExp() QueryNode
-}
+//type QueryNodeTree interface {
+//	GetLogicalType() bool
+//	Children() []QueryNodeTree
+//	GetAnd() []QueryNodeTree
+//	GetOr() []QueryNodeTree
+//	GetExp() QueryNode
+//}
 
 type NodeType uint8
-type BooleanLogic bool
+type BooleanOperator uint8
 
 const (
-	BooleanAND = BooleanLogic(true)
-	BooleanOR  = BooleanLogic(false)
+	BooleanAND = BooleanOperator(1)
+	BooleanOR = BooleanOperator(2)
 
 	RootNode = NodeType(0)
 	InnerNode = NodeType(1)
@@ -26,20 +27,16 @@ const (
 
 // Type is BooleanAND by default
 type QueryNode struct {
-	Type NodeType
-
-	Exp Exp
-
-	Logic    BooleanLogic
+	Bool     BooleanOperator
 	Children []*QueryNode
+
+	Exp exp.Exp
 }
 
-func newQueryNode(logic BooleanLogic, children []*QueryNode) *QueryNode {
-	return &QueryNode{
-		Logic: logic,
-		Children: children,
-	}
+func (q *QueryNode) isLeaf() bool {
+	return q.Exp != nil && len(q.Children) == 0
 }
+
 
 //
 //type jsonExpTree struct {

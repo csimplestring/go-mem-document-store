@@ -2,7 +2,7 @@ package exp
 import "github.com/csimplestring/go-mem-store/document"
 
 type Eq struct {
-	*BinaryExp
+	*BinaryCmpExp
 }
 
 func (eq *Eq) Match(d document.Document) bool {
@@ -16,7 +16,7 @@ func (eq *Eq) Match(d document.Document) bool {
 
 func NewEq(field string, value interface{}) *Eq {
 	return &Eq{
-		BinaryExp: &BinaryExp{
+		BinaryCmpExp: &BinaryCmpExp{
 			field: field,
 			value: value,
 		},

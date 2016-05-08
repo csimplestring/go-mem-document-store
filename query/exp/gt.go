@@ -5,7 +5,7 @@ import (
 )
 
 type Gt struct {
-	*BinaryExp
+	*BinaryCmpExp
 }
 
 func (g *Gt) Match(d document.Document) bool {
@@ -32,7 +32,7 @@ func (g *Gt) Match(d document.Document) bool {
 
 func NewGt(field string, value interface{}) *Gt {
 	return &Gt{
-		BinaryExp: &BinaryExp{
+		BinaryCmpExp: &BinaryCmpExp{
 			field: field,
 			value: value,
 		},

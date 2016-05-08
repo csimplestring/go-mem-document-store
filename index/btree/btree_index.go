@@ -5,6 +5,7 @@ import (
 	"github.com/csimplestring/go-mem-store/document"
 	"github.com/csimplestring/go-mem-store/types"
 	"github.com/petar/GoLLRB/llrb"
+	"github.com/csimplestring/go-mem-store/index"
 )
 
 // btreeIndex represents an index using b-tree.
@@ -35,6 +36,25 @@ func (b *btreeIndex) Insert(doc document.Document) error {
 	b.btree.ReplaceOrInsert(newItem)
 
 	return nil
+}
+
+func (b *btreeIndex) Search(op index.Op, args... interface{}) ([]document.ObjectID, error) {
+	switch op {
+	case index.OpEq:
+		return b.Find(args[0])
+	case index.OpGt:
+		return b.FindGreaterThan(args[0])
+	case index.OpGte:
+		return b.FindGreaterThanEqual(args[0])
+	case index.OpLt:
+		return b.FindLessThan(args[0])
+	case index.OpLte:
+		return b.FindLessThanEqual(args[0])
+	case index.OpRange:
+		return b.FindRange(args[0], args[1])
+	default:
+		return nil, fmt.Errorf("Unsupported operation for index search: %s", op)
+	}
 }
 
 // FindLessThan finds all the documents whose field is between the start and the end key.

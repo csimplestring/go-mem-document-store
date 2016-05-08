@@ -7,7 +7,7 @@ type QueryOptimizer struct {
 
 func (q *QueryOptimizer) findIndexByFields(fields... string) index.Index {
 	for _, idx := range q.indices {
-		if idx.Match(fields) {
+		if idx.Match(fields...) {
 			return idx
 		}
 	}
@@ -19,7 +19,7 @@ func (q *QueryOptimizer) canUseIndex()  {
 
 }
 
-func CanUseIndex(optimizer *QueryOptimizer, node QueryNode) bool {
+func CanUseIndex(optimizer *QueryOptimizer, node *QueryNode) bool {
 	if node.Type == LeafNode {
 		return optimizer.findIndexByFields(node.Exp.Field()) != nil
 	}
@@ -27,7 +27,7 @@ func CanUseIndex(optimizer *QueryOptimizer, node QueryNode) bool {
 	if node.Type == InnerNode && node.Logic == BooleanAND {
 		canUse := false
 		for _, subNode := range node.Children {
-			canUse |= CanUseIndex(optimizer, subNode)
+			canUse = canUse || CanUseIndex(optimizer, subNode)
 		}
 		return canUse
 	}
@@ -35,11 +35,12 @@ func CanUseIndex(optimizer *QueryOptimizer, node QueryNode) bool {
 	if node.Type == InnerNode && node.Logic == BooleanOR {
 		canUse := true
 		for _, subNode := range node.Children {
-			canUse &= CanUseIndex(optimizer, subNode)
+			canUse = canUse && CanUseIndex(optimizer, subNode)
 		}
 		return canUse
 	}
 
+	return false;
 }
 
 func canUseIndexForAND(indices []index.Index, andQuery QueryNode)  {

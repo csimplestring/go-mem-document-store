@@ -12,8 +12,8 @@ const (
 type T uint8
 
 // getItemType returns the Item's type value
-func Of(Item interface{}) T {
-	switch Item.(type) {
+func Of(v interface{}) T {
+	switch v.(type) {
 	case int:
 		return Int
 	case float32:

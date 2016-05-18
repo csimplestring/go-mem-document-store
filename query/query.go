@@ -2,7 +2,7 @@ package query
 import "github.com/csimplestring/go-mem-store/query/exp"
 
 type Query interface {
-	GetExpTree() QueryNodeTree
+	GetExpTree()
 }
 
 //type QueryNodeTree interface {
@@ -33,10 +33,17 @@ type QueryNode struct {
 	Exp exp.Exp
 }
 
-func (q *QueryNode) isLeaf() bool {
+func (q *QueryNode) IsLeaf() bool {
 	return q.Exp != nil && len(q.Children) == 0
 }
 
+func (q *QueryNode) IsAnd() bool {
+	return q.Bool == BooleanAND
+}
+
+func (q *QueryNode) IsOr() bool {
+	return q.Bool == BooleanOR
+}
 
 //
 //type jsonExpTree struct {

@@ -2,6 +2,7 @@ package types
 
 const (
 	Unsupported = iota
+	Null
 	Int
 	Float32
 	Float64
@@ -14,6 +15,8 @@ type T uint8
 // getItemType returns the Item's type value
 func Of(v interface{}) T {
 	switch v.(type) {
+	case nil:
+		return Null
 	case int:
 		return Int
 	case float32:

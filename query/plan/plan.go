@@ -1,4 +1,4 @@
-package query
+package plan
 
 import (
 	"fmt"
@@ -43,7 +43,7 @@ func (i *IndexScanPlan) Cost() float64 {
 }
 
 func (i *IndexScanPlan) Explain() string {
-	return fmt.Sprintf("using index on %s;", i.index.Fields())
+	return fmt.Sprintf("using index on %s;", i.index.Field())
 }
 
 type AndScanPlan struct {
@@ -66,6 +66,32 @@ func (a *AndScanPlan) Explain() string {
 
 	explained := ""
 	for _, filter := range a.filters {
+		explained = explained + " " + filter.Explain()
+	}
+
+	return explained
+}
+
+type OrScanPlan struct {
+	filters []ScanPlan
+	exp exp.Exp
+}
+
+func (o *OrScanPlan) Run(docs []*document.Document) []*document.ObjectID {
+	return nil
+}
+
+func (o *OrScanPlan) Cost() float64 {
+	return 0.0
+}
+
+func (o *OrScanPlan) Explain() string {
+	if len(o.filters) == 0 {
+		return "simple scan;"
+	}
+
+	explained := ""
+	for _, filter := range o.filters {
 		explained = explained + " " + filter.Explain()
 	}
 

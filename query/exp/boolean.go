@@ -15,6 +15,10 @@ func (a *And) Match(d document.Document) bool {
 	return true
 }
 
+func (a *And) Field() string {
+	return ""
+}
+
 type Or struct {
 	expressions []Exp
 }
@@ -27,6 +31,10 @@ func (o *Or) Match(d document.Document) bool {
 	}
 
 	return false
+}
+
+func (o *Or) Field() string {
+	return ""
 }
 
 func NewAndExp(expressions []Exp) *And {

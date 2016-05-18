@@ -7,6 +7,7 @@ import (
 
 type Exp interface {
 	Match(d document.Document) bool
+	Field() string
 }
 
 type BinaryCmpExp struct {

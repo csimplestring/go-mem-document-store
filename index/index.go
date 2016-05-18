@@ -1,13 +1,13 @@
 package index
 
 import (
+	"fmt"
 	"github.com/csimplestring/go-mem-store/document"
-	"hash"
 )
 
 type Index interface {
 	Search(op Op, args ...interface{}) ([]document.ObjectID, error)
-	Fields() []string
+	Field() string
 }
 
 type Op string
@@ -23,30 +23,23 @@ const (
 
 type IndexManager struct {
 	indices map[string]Index
-	hash    hash.Hash
 }
 
-func (i *IndexManager) AddIndex(idx Index) {
-	key := i.getKeyFor(idx.Fields())
-	i.indices[key] = idx
-}
-
-func (i *IndexManager) FindIndexByFields(fields ...string) Index {
-	for i = len(fields); i>=0; i-- {
-		key := i.getKeyFor(fields[:i])
-		if idx, ok := i.indices[key]; ok {
-			return idx
-		}
+func (i *IndexManager) AddIndex(idx Index) error {
+	if _, exist := i.indices[idx.Field()]; exist {
+		return fmt.Errorf("Duplicate index on field %s", idx.Field())
 	}
 
+	i.indices[idx.Field()] = idx
 	return nil
 }
 
-func (i *IndexManager) getKeyFor(fields ...string) string {
-	i.hash.Reset()
-	for _, f := range fields {
-		i.hash.Write([]byte(f))
-	}
+func (i *IndexManager) FindIndexByField(field string) Index {
+	return i.indices[field]
+}
 
-	return string(i.hash.Sum(nil))
+func NewManager() *IndexManager {
+	return &IndexManager{
+		indices: make(map[string]Index),
+	}
 }

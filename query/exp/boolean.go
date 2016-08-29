@@ -1,8 +1,20 @@
 package exp
 import "github.com/csimplestring/go-mem-store/document"
 
-type And struct {
+type BooleanExp struct  {
 	expressions []Exp
+}
+
+func (b *BooleanExp) Field() string {
+	return ""
+}
+
+func (b *BooleanExp) Children() []Exp {
+	return b.expressions
+}
+
+type And struct {
+	*BooleanExp
 }
 
 func (a *And) Match(d document.Document) bool {
@@ -15,12 +27,12 @@ func (a *And) Match(d document.Document) bool {
 	return true
 }
 
-func (a *And) Field() string {
-	return ""
-}
+//func (a *And) Field() string {
+//	return ""
+//}
 
 type Or struct {
-	expressions []Exp
+	*BooleanExp
 }
 
 func (o *Or) Match(d document.Document) bool {
@@ -33,19 +45,23 @@ func (o *Or) Match(d document.Document) bool {
 	return false
 }
 
-func (o *Or) Field() string {
-	return ""
-}
+//func (o *Or) Field() string {
+//	return ""
+//}
 
 func NewAndExp(expressions []Exp) *And {
 	return &And{
-		expressions: expressions,
+		BooleanExp: &BooleanExp{
+			expressions: expressions,
+		},
 	}
 }
 
 func NewOrExp(expressions []Exp) *Or {
 	return &Or{
-		expressions: expressions,
+		BooleanExp: &BooleanExp{
+			expressions: expressions,
+		},
 	}
 }
 

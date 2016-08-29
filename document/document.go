@@ -6,6 +6,8 @@ import (
 	"errors"
 )
 
+// Document represents a scheme-less data-structure, whose field value can be retrieved
+// by key path.
 type Document interface  {
 	ID() ObjectID
 	Get(key string) interface{}
